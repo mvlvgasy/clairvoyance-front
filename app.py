@@ -184,9 +184,10 @@ def page_trusf():
         2.  **Neck :** Mélange des échelles (FPN).
         3.  **Head :** Prédiction des Bounding Boxes.
         """)
+    # Dans page_trusf()
     with col2:
-        st.image("/home/aurelien/code/baptperr/clairvoyance-front/Instructions d'assemblages_page-0001.jpg", caption="Concept d'assemblage TRUSF")
-
+        # Juste le nom du fichier, sans /home/aurelien...
+        st.image("plan_ikea.jpg", caption="Concept d'assemblage TRUSF")
     st.markdown("---")
     st.markdown("#### 🎥 Démo Technique")
     # st.video("https://www.youtube.com/watch?v=MPV2METPeJU")
