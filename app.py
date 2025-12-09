@@ -16,6 +16,8 @@ st.set_page_config(
 # Url api de service
 API_URL = "https://clairvoyance-api-yolov8-mutliclass-v2-401633208612.europe-west1.run.app/"
 
+API_URL = st.secrets["API_URL"]
+
 # --- STYLE CSS (Minimaliste - On garde le gris par défaut) ---
 st.markdown("""
     <style>
