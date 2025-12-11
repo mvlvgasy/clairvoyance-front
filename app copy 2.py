@@ -22,6 +22,7 @@ def get_base64_of_bin_file(bin_file):
 
 # Recherche automatique de l'image de fond
 bg_file_path = None
+# Ajoute ici tous les noms possibles de ton fichier fond
 for file in ["background.jpg", "background.png", "background.jpeg", "Capture d'écran 2025-12-11 101557.jpg"]:
     if os.path.exists(file):
         bg_file_path = file
@@ -45,7 +46,7 @@ if bg_file_path:
 
         /* 2. LE CADRE (GLASSMORPHISM) */
         .block-container {{
-            background-color: rgba(0, 0, 0, 0.80);
+            background-color: rgba(0, 0, 0, 0.80); /* Un peu plus sombre pour la lisibilité */
             backdrop-filter: blur(5px);
             border-radius: 15px;
             padding: 3rem !important;
@@ -87,6 +88,7 @@ if bg_file_path:
     except Exception as e:
         st.error(f"Erreur chargement fond : {e}")
 else:
+    # Pas d'image trouvée, on ne met rien (fond par défaut)
     pass
 
 
@@ -94,8 +96,7 @@ else:
 try:
     API_URL = st.secrets["API_URL"]
 except:
-    # URL de secours (à mettre à jour si besoin)
-    API_URL = "https://clairvoyance-api-yolov8-mutliclass-vraifinal-401633208612.europe-west1.run.app"
+    API_URL = ""
 
 # --- FONCTION D'ENVOI ---
 def send_image_to_api(image_bytes, endpoint):
@@ -104,8 +105,7 @@ def send_image_to_api(image_bytes, endpoint):
         return None
     try:
         files = {'file': ('image.jpg', image_bytes, 'image/jpeg')}
-        # Timeout augmenté pour le cold start
-        response = requests.post(f"{API_URL}/{endpoint}", files=files, timeout=120)
+        response = requests.post(f"{API_URL}/{endpoint}", files=files)
         if response.status_code == 200:
             return response
         return None
@@ -126,6 +126,7 @@ with col_logo:
         st.write("🔮")
 
 with col_title:
+    # NOUVEAUX TITRES
     st.title("Clairvoyance : L’œil du véhicule autonome")
     st.markdown("### *Comparatif des architectures de vision par ordinateur*")
 
@@ -149,9 +150,7 @@ if uploaded_file is not None:
         # 3 Colonnes
         col_past, col_present, col_future = st.columns(3, gap="medium")
 
-        # ==========================================
-        # 1. LE PASSÉ (CNN)
-        # ==========================================
+        # --- 1. LE PASSÉ (CNN) ---
         with col_past:
             st.header("1️⃣ Le Passé")
             st.caption("Approche Naïve (CNN)")
@@ -167,63 +166,23 @@ if uploaded_file is not None:
                 else:
                     st.warning("Service indisponible")
 
-        # ==========================================
-        # 2. LE PRÉSENT (TRUSF - YOLO MAISON)
-        # ==========================================
+        # --- 2. LE PRÉSENT (TRUSF) ---
         with col_present:
             st.header("2️⃣ Le Présent")
             st.caption("Architecture TRUSF (Maison)")
             st.markdown("---")
 
-            with st.spinner('Inférence Custom YOLO...'):
-                # Appel de la nouvelle route API "predict_custom_yolo"
-                response = send_image_to_api(bytes_data, "predict_custom_yolo")
+            st.info("🛠️ **Architecture en développement**")
 
-                if response:
-                    data = response.json()
+            plan_path = "plan_ikea.jpg" if os.path.exists("plan_ikea.jpg") else None
+            if plan_path:
+                st.image(plan_path, caption="Concept", width="stretch")
 
-                    # 1. AFFICHAGE DE L'IMAGE DESSINÉE PAR L'API (Identique au Futur)
-                    try:
-                        b64_string = data['image_data']['b64']
-                        if b64_string:
-                            img_decoded = base64.b64decode(b64_string)
-                            st.image(Image.open(io.BytesIO(img_decoded)), caption="Détection Maison", width="stretch")
-                        else:
-                            st.warning("Pas d'image renvoyée")
-                    except Exception as e:
-                        st.error(f"Erreur affichage image: {e}")
+            st.markdown("""
+            **Logique :** Reconstruction couche par couche (Backbone > Neck > Head) pour maîtriser la détection.
+            """)
 
-                    # 2. Statistiques (Compteurs)
-                    st.markdown("#### 📊 Statistiques")
-                    counts = data['summary']
-
-                    # Note: Le modèle maison renvoie des clés avec Majuscule (Car, Bus...)
-                    p1, p2 = st.columns(2)
-                    p1.metric("🚗 Cars", counts.get('Car', 0))
-                    p2.metric("🏍️ Motos", counts.get('Motorcycle', 0))
-
-                    p3, p4 = st.columns(2)
-                    p3.metric("🚌 Bus", counts.get('Bus', 0))
-                    p4.metric("🚛 Trucks", counts.get('Truck', 0))
-
-                    # 3. Tableau détaillé
-                    if data.get('detections'):
-                        with st.expander("📋 Données détaillées (Bbox & Conf)"):
-                            df = pd.DataFrame(data['detections'])
-                            st.dataframe(
-                                df[['label', 'confidence', 'bbox']].style.format({"confidence": "{:.2%}"}),
-                                width="stretch"
-                            )
-                else:
-                    st.warning("Service Custom indisponible")
-                    # Fallback visuel si l'API ne répond pas
-                    plan_path = "plan_ikea.jpg" if os.path.exists("plan_ikea.jpg") else None
-                    if plan_path:
-                        st.image(plan_path, caption="Concept Architectural", width="stretch")
-
-        # ==========================================
-        # 3. LE FUTUR (YOLO SOTA)
-        # ==========================================
+        # --- 3. LE FUTUR (YOLO SOTA) ---
         with col_future:
             st.header("3️⃣ Le Futur")
             st.caption("Standard Industriel (YOLOv8)")
@@ -236,17 +195,17 @@ if uploaded_file is not None:
                     try:
                         b64_string = data['image_data']['b64']
                         img_decoded = base64.b64decode(b64_string)
-                        st.image(Image.open(io.BytesIO(img_decoded)), caption="Détection SOTA", width="stretch")
+                        st.image(Image.open(io.BytesIO(img_decoded)), caption="Détection", width="stretch")
                     except:
                         pass
 
                     st.success(f"⚡ Vitesse : **{data['performance']['inference']:.1f} ms**")
 
-                    # Statistiques
+                    # RETOUR DES DETAILS COMPLETS
                     st.markdown("#### 📊 Statistiques")
                     counts = data['summary']
 
-                    # Note: Le modèle SOTA renvoie des clés minuscules (car, bus...)
+                    # Grille 2x2 pour les compteurs
                     k1, k2 = st.columns(2)
                     k1.metric("🚗 Cars", counts.get('car', 0))
                     k2.metric("🏍️ Motos", counts.get('motorcycle', 0))
@@ -255,13 +214,14 @@ if uploaded_file is not None:
                     k3.metric("🚌 Bus", counts.get('bus', 0))
                     k4.metric("🚛 Trucks", counts.get('truck', 0))
 
-                    # Tableau détaillé
+                    # Tableau détaillé avec coordonnées
                     if data.get('detections'):
                         with st.expander("📋 Données détaillées (Bbox & Conf)"):
                             df = pd.DataFrame(data['detections'])
+                            # On formatte la confiance en % et on affiche tout
                             st.dataframe(
                                 df[['label', 'confidence', 'bbox']].style.format({"confidence": "{:.2%}"}),
-                                width="stretch"
+                                use_container_width=True
                             )
 
 st.markdown("---")
