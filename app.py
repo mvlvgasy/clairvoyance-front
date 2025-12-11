@@ -19,14 +19,14 @@ def get_img_as_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-# Tente de charger l'image de fond (si elle existe)
+# Tente de charger l'image de fond
 try:
     img = get_img_as_base64("background.png")
 
     # CSS AVANCÉ : BACKGROUND + EFFET VERRE (GLASSMORPHISM)
     page_bg_img = f"""
     <style>
-    /* 1. L'IMAGE DE FOND (Générale) */
+    /* 1. L'IMAGE DE FOND */
     [data-testid="stAppViewContainer"] {{
         background-image: url("data:image/jpeg;base64,{img}");
         background-size: cover;
@@ -35,37 +35,35 @@ try:
         background-attachment: fixed;
     }}
 
-    /* 2. LE CONTENEUR PRINCIPAL (Le "Gros Carré") */
-    /* C'est ici qu'on crée la zone de lecture */
+    /* 2. LE CONTENEUR PRINCIPAL */
     .block-container {{
-        background-color: rgba(15, 15, 15, 0.85); /* Noir à 85% d'opacité */
-        backdrop-filter: blur(8px); /* Effet de flou sur l'image derrière */
-        border-radius: 20px; /* Bords arrondis */
-        padding: 3rem !important; /* Marge intérieure */
+        background-color: rgba(15, 15, 15, 0.85);
+        backdrop-filter: blur(8px);
+        border-radius: 20px;
+        padding: 3rem !important;
         margin-top: 2rem;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5); /* Ombre portée pour le relief */
-        border: 1px solid rgba(255, 255, 255, 0.1); /* Fine bordure brillante */
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }}
 
-    /* 3. COULEURS DU TEXTE */
-    /* On force tout en blanc pour le contraste sur le fond noir */
+    /* 3. TEXTE BLANC */
     h1, h2, h3, h4, h5, p, span, div, label {{
         color: #ffffff !important;
     }}
 
-    /* 4. STYLE DES BOUTONS */
+    /* 4. BOUTONS */
     .stButton>button {{
         width: 100%;
         border-radius: 10px;
         height: 3em;
-        background-image: linear-gradient(to right, #FF4B4B, #FF914D); /* Dégradé stylé */
+        background-image: linear-gradient(to right, #FF4B4B, #FF914D);
         color: white;
         font-weight: bold;
         border: none;
-        box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4); /* Lueur sous le bouton */
+        box-shadow: 0 4px 15px rgba(255, 75, 75, 0.4);
     }}
 
-    /* 5. ZONE DE DÉPÔT DE FICHIER (File Uploader) */
+    /* 5. ZONE D'UPLOAD */
     [data-testid="stFileUploader"] {{
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
@@ -102,15 +100,14 @@ def send_image_to_api(image_bytes, endpoint):
 # EN-TÊTE (LOGO + TITRE)
 # ==========================================
 
-# On crée 2 colonnes : une petite pour le logo, une grande pour le titre
 col_logo, col_title = st.columns([1, 6])
 
 with col_logo:
     try:
-        # Affiche le logo s'il existe
-        st.image("logo2.png", use_container_width=True)
+        # CORRECTION ICI : width="stretch" au lieu de use_container_width=True
+        st.image("logo2.png", width="stretch")
     except:
-        st.write("🔮") # Emoji si pas de logo
+        st.write("🔮")
 
 with col_title:
     st.title("Clairvoyance : L'Évolution")
@@ -128,7 +125,8 @@ if uploaded_file is not None:
     bytes_data = img_bytes.getvalue()
 
     with st.expander("📸 Voir l'image originale"):
-        st.image(image, caption="Image Source", use_container_width=True)
+        # CORRECTION ICI
+        st.image(image, caption="Image Source", width="stretch")
 
     if st.button("LANCER L'ANALYSE TEMPORELLE 🚀"):
         st.balloons()
@@ -160,7 +158,8 @@ if uploaded_file is not None:
 
             st.info("🛠️ **Architecture en développement**")
             try:
-                st.image("plan_ikea.jpg", caption="Concept", use_container_width=True)
+                # CORRECTION ICI
+                st.image("plan_ikea.jpg", caption="Concept", width="stretch")
             except:
                 pass
 
@@ -181,7 +180,8 @@ if uploaded_file is not None:
                     try:
                         b64_string = data['image_data']['b64']
                         img_decoded = base64.b64decode(b64_string)
-                        st.image(Image.open(io.BytesIO(img_decoded)), caption="Détection", use_container_width=True)
+                        # CORRECTION ICI
+                        st.image(Image.open(io.BytesIO(img_decoded)), caption="Détection", width="stretch")
                     except:
                         pass
 
