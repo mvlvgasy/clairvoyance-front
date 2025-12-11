@@ -105,6 +105,21 @@ if bg_file_path:
             text-align: center;
             margin-bottom: -10px;
         }}
+
+        /* 7. NOUVEAUX TITRES COLONNES */
+        .col-header-small {{
+            font-size: 14px !important;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #aaaaaa !important;
+            margin-bottom: -5px;
+        }}
+        .col-header-big {{
+            font-size: 32px !important;
+            font-weight: 700 !important;
+            color: white !important;
+            margin-top: 0px;
+        }}
         </style>
         """
         st.markdown(page_bg_img, unsafe_allow_html=True)
@@ -175,8 +190,9 @@ if uploaded_file is not None:
         # 1. LE PASSÉ (CNN)
         # ==========================================
         with col_past:
-            st.header("1️⃣ Le Passé")
-            st.caption("Approche Naïve (CNN)")
+            # TITRES MODIFIÉS
+            st.markdown('<div class="col-header-small">1 - LE PASSÉ</div>', unsafe_allow_html=True)
+            st.markdown('<div class="col-header-big">CNN Naïf</div>', unsafe_allow_html=True)
             st.markdown("---")
 
             with st.spinner('Analyse CNN...'):
@@ -185,7 +201,6 @@ if uploaded_file is not None:
                     data = response.json()
 
                     # --- AFFICHAGE CNN MODIFIÉ (Gros Texte) ---
-                    # On utilise du HTML pour faire ressortir la prédiction
                     pred_class = data['prediction']
                     st.markdown(f"""
                         <div class="pred-label">Prédiction :</div>
@@ -204,8 +219,9 @@ if uploaded_file is not None:
         # 2. LE PRÉSENT (TRUSF - YOLO MAISON)
         # ==========================================
         with col_present:
-            st.header("2️⃣ Le Présent")
-            st.caption("Architecture TRUSF (Maison)")
+            # TITRES MODIFIÉS
+            st.markdown('<div class="col-header-small">2 - LE PRÉSENT</div>', unsafe_allow_html=True)
+            st.markdown('<div class="col-header-big">Modèle TRUSF</div>', unsafe_allow_html=True)
             st.markdown("---")
 
             with st.spinner('Inférence Custom YOLO...'):
@@ -223,7 +239,6 @@ if uploaded_file is not None:
 
                             # Pour le texte, on essaie de charger une police par défaut, sinon fallback
                             try:
-                                # Essaie de charger une police système ou défaut PIL
                                 font = ImageFont.load_default()
                             except:
                                 font = None
@@ -243,7 +258,6 @@ if uploaded_file is not None:
                                 text_str = f"{label} {conf:.0%}"
 
                                 # Fond du texte (petit rectangle pour lisibilité)
-                                # Calcul taille texte approximatif si font dispo
                                 if hasattr(draw, "textbbox"):
                                     left, top, right, bottom = draw.textbbox(bbox[:2], text_str)
                                     text_w = right - left
@@ -265,10 +279,9 @@ if uploaded_file is not None:
                         st.warning("Aucun véhicule détecté")
 
                     # --- VITESSE D'EXECUTION (Comme SOTA) ---
-                    # On récupère la vitesse si dispo, sinon on l'estime
                     speed = data.get('performance', {}).get('inference', 0)
                     if speed == 0:
-                        st.success(f"⚡ Vitesse : **~200 ms**") # Valeur par défaut si API ne renvoie pas
+                        st.success(f"⚡ Vitesse : **~200 ms**")
                     else:
                         st.success(f"⚡ Vitesse : **{speed:.1f} ms**")
 
@@ -302,8 +315,9 @@ if uploaded_file is not None:
         # 3. LE FUTUR (YOLO SOTA)
         # ==========================================
         with col_future:
-            st.header("3️⃣ Le Futur")
-            st.caption("Standard Industriel (YOLOv8)")
+            # TITRES MODIFIÉS
+            st.markdown('<div class="col-header-small">3 - LE FUTUR</div>', unsafe_allow_html=True)
+            st.markdown('<div class="col-header-big">YOLOv8</div>', unsafe_allow_html=True)
             st.markdown("---")
 
             with st.spinner('Inférence SOTA...'):
